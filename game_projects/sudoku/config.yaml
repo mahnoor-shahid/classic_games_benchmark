@@ -1,0 +1,109 @@
+analysis:
+  generate_plots: true
+  include_statistical_tests: true
+  plot_dpi: 300
+  plot_formats:
+  - png
+  - pdf
+  validate_all_puzzles: true
+  visualizations:
+    complexity_metrics: true
+    compositionality_graph: true
+    difficulty_progression: true
+    mnist_sample_grid: true
+    solution_time_analysis: true
+    strategy_usage_distribution: true
+environment:
+  create_virtual_env: true
+  download_mnist: true
+  install_dependencies: true
+  python_version: 3.8+
+  venv_name: mnist-sudoku-env
+generation:
+  complexity:
+    easy:
+      max_filled_cells: 45
+      max_strategies: 2
+      min_filled_cells: 35
+      prefer_single_strategy: true
+    hard:
+      max_filled_cells: 30
+      max_strategies: 5
+      min_filled_cells: 17
+      require_advanced_strategies: true
+    moderate:
+      allow_composite_strategies: true
+      max_filled_cells: 40
+      max_strategies: 3
+      min_filled_cells: 25
+  mnist:
+    brightness_variation: 0.1
+    grid_size: 252
+    image_size: 28
+    noise_level: 0.0
+    rotation_angle: 0
+    use_augmentation: false
+  num_puzzles:
+    easy: 10
+    hard: 2
+    moderate: 10
+  strategies:
+    custom_strategy_weights:
+      hidden_single_row: 1.0
+      naked_pair: 0.8
+      naked_single: 1.0
+      swordfish: 0.3
+      x_wing: 0.6
+    include_all_easy: true
+    include_all_hard: true
+    include_all_moderate: true
+hardware:
+  device: auto
+  memory_limit_gb: 8
+  num_workers: 4
+logging:
+  backup_count: 3
+  console_output: true
+  file_output: true
+  level: INFO
+  log_file: mnist_sudoku.log
+  max_file_size_mb: 10
+  progress:
+    estimated_time: true
+    show_progress_bars: true
+    update_frequency: 10
+output:
+  documentation:
+    create_usage_examples: true
+    export_fol_rules: true
+    generate_dataset_report: true
+    include_strategy_documentation: true
+  formats:
+    csv: true
+    hdf5: false
+    json: true
+    pickle: false
+  images:
+    compress_images: true
+    create_thumbnail_grid: true
+    image_quality: 95
+    save_mnist_puzzles: true
+    save_solution_images: true
+project:
+  data_dir: ./data
+  logs_dir: ./logs
+  name: mnist-sudoku
+  output_dir: ./output
+  version: 1.0.0
+validation:
+  check_uniqueness: true
+  max_solve_time_seconds: 30
+  quality:
+    avoid_guessing: true
+    max_puzzle_difficulty_score: 0.9
+    min_puzzle_difficulty_score: 0.3
+    require_human_solvable: true
+  strict_mode: true
+  test_sample_size: 5
+  validate_strategies: true
+  verify_solvability: true

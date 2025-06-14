@@ -1,0 +1,66 @@
+{
+  "environment_name": "classic_games_env",
+  "created_date": "N/A",
+  "python_version": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+  "platform": "Windows",
+  "shared_data_location": "./shared_data/",
+  "supported_games": [
+    "sudoku",
+    "kenken",
+    "kakuro",
+    "nonogram"
+  ],
+  "setup_log": [
+    "[INFO] Python 3.11.9 - Compatible",
+    "[INFO] Disk space: 410.1GB available",
+    "[INFO] pip found",
+    "[INFO] python found",
+    "[INFO] Unified environment classic_games_env already exists",
+    "[INFO] Upgrading pip...",
+    "[INFO] Installing shared dependencies for all games...",
+    "[INFO] Installing numpy...",
+    "[INFO] Installing torch...",
+    "[INFO] Installing torchvision...",
+    "[INFO] Installing pillow...",
+    "[INFO] Installing pyyaml...",
+    "[INFO] Installing matplotlib...",
+    "[INFO] Installing seaborn...",
+    "[INFO] Installing pandas...",
+    "[INFO] Installing plotly...",
+    "[INFO] Installing networkx...",
+    "[INFO] Installing jupyter...",
+    "[INFO] Installing pytest...",
+    "[INFO] All shared dependencies installed successfully",
+    "[INFO] Created shared data directory: ./shared_data",
+    "[INFO] Created subdirectory: ./shared_data/mnist",
+    "[INFO] Created subdirectory: ./shared_data/models",
+    "[INFO] Created subdirectory: ./shared_data/cache",
+    "[INFO] Created subdirectory: ./shared_data/temp",
+    "[INFO] Downloading MNIST to shared location...",
+    "[INFO] MNIST dataset downloaded to shared location",
+    "[INFO] Created activation script: activate_classic_games.bat",
+    "[INFO] Installation test passed"
+  ],
+  "usage": {
+    "activation": {
+      "windows": "activate_classic_games.bat",
+      "linux_mac": "source activate_classic_games.sh"
+    },
+    "games": {
+      "sudoku": "cd sudoku && python main.py --action show_kb",
+      "kenken": "cd kenken && python kenken_main.py --action show_kb"
+    }
+  },
+  "shared_dependencies": [
+    "numpy",
+    "torch",
+    "torchvision",
+    "pillow",
+    "pyyaml",
+    "matplotlib",
+    "seaborn",
+    "pandas",
+    "plotly",
+    "networkx"
+  ]
+}

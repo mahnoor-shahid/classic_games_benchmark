@@ -1,0 +1,89 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+classic_games_env/
+venv/
+ENV/
+env/
+.env
+.venv
+env.bak/
+venv.bak/
+
+# Setup Guide
+SETUP_GUIDE.md
+activate_classic_games.bat
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# Local development settings
+.env
+.env.local
+.env.*.local
+
+# System Files
+.DS_Store
+Thumbs.db 
+
+# Data
+shared_data/
+game_projects/sudoku/data/
+game_projects/sudoku/output/
+game_projects/sudoku/output/images/
+game_projects/sudoku/output/datasets/
+game_projects/sudoku/output/logs/
+game_projects/sudoku/output/models/
+game_projects/sudoku/output/results/
+game_projects/sudoku/output/reports/
+game_projects/sudoku/output/analysis/
