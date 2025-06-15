@@ -1,207 +1,165 @@
 # kenken_moderate_strategies_kb.py
 """
-Knowledge Base for Moderate KenKen Solving Strategies
+Knowledge Base for Moderate Ken Ken Solving Strategies
 Contains FOL rules that compose easy strategies for intermediate techniques
 """
 
-from kenken_easy_strategies_kb import EasyKenKenStrategiesKB
+from kenken_easy_strategies_kb import KenKenEasyStrategiesKB
+from typing import List, Dict
 
-class ModerateKenKenStrategiesKB:
+class KenKenModerateStrategiesKB:
     def __init__(self):
-        self.easy_kb = EasyKenKenStrategiesKB()
+        self.easy_kb = KenKenEasyStrategiesKB()
         self.strategies = {
-            "cage_candidate_elimination": {
-                "name": "Cage Candidate Elimination",
-                "description": "Eliminate candidates by analyzing cage constraints with row/column conflicts",
+            "cage_elimination": {
+                "name": "Cage Elimination",
+                "description": "Eliminate candidates based on partial cage assignments and remaining target",
                 "fol_rule": """
-                ∀cage(c) ∀cell(r1,c1) ∀cell(r2,c2) ∀value(v):
-                    [cell(r1,c1) ∈ cage(c)] ∧ [cell(r2,c2) ∈ cage(c)]
-                    ∧ [same_row(r1,r2) ∨ same_column(c1,c2)]
-                    ∧ [v ∈ candidates(cell(r1,c1))] ∧ [v ∈ candidates(cell(r2,c2))]
-                    ∧ [¬∃valid_cage_assignment: contains(v, cell(r1,c1)) ∧ contains(v, cell(r2,c2))]
-                    → [remove_candidate(cell(r1,c1), v) ∨ remove_candidate(cell(r2,c2), v)]
+                ∀cage(c) ∀assigned_cells(A) ∀empty_cells(E) ∀current_sum(s) ∀target(t):
+                    [cage_operation(c) = add] ∧ [A ∪ E = cells_in_cage(c)] ∧ [A ∩ E = ∅]
+                    ∧ [sum(values(A)) = s] ∧ [cage_target(c) = t]
+                    → [∀cell ∈ E: ∀v ∈ candidates(cell): 
+                       if impossible_to_complete_cage(E, v, t-s) then remove_candidate(cell, v)]
                 """,
-                "logic": "If placing same value in two cage cells violates row/column uniqueness, eliminate candidates",
+                "logic": "Remove candidates that would make it impossible to complete the cage target",
                 "complexity": "moderate",
                 "composite": True,
-                "composed_of": ["eliminate_by_row", "eliminate_by_column", "simple_cage_arithmetic"]
+                "composed_of": ["cage_completion", "simple_addition_cage", "naked_single"]
             },
             
-            "multi_cage_intersection": {
-                "name": "Multi-Cage Intersection Analysis",
-                "description": "Analyze intersections between multiple cages to eliminate candidates",
+            "complex_arithmetic_cages": {
+                "name": "Complex Arithmetic Cages",
+                "description": "Solve larger cages with multiple operations and constraints",
                 "fol_rule": """
-                ∀cage(c1) ∀cage(c2) ∀cell(r,col) ∀value(v):
-                    [cell(r,col) ∈ row_or_column_intersection(c1, c2)]
-                    ∧ [v ∈ candidates(cell(r,col))]
-                    ∧ [assignment_to_cage(c1, v) conflicts_with assignment_to_cage(c2, v)]
-                    → [remove_candidate(cell(r,col), v)]
+                ∀cage(c) ∀operation(op) ∀target(t) ∀cells(C) ∀grid_size(n):
+                    [cage_operation(c) = op] ∧ [cage_target(c) = t] ∧ [|C| ≥ 3]
+                    ∧ [∀cell ∈ C: assigned(cell) ∨ |candidates(cell)| > 1]
+                    → [apply_constraint_propagation(c, op, t, C, n)]
                 """,
-                "logic": "Use intersections between cages to eliminate candidates that create conflicts",
+                "logic": "Use constraint propagation for complex cages with multiple cells",
                 "complexity": "moderate",
                 "composite": True,
-                "composed_of": ["cage_boundary_constraint", "eliminate_by_row", "eliminate_by_column"]
+                "composed_of": ["cage_elimination", "basic_multiplication_cage", "simple_addition_cage"]
             },
             
-            "cage_combination_analysis": {
-                "name": "Cage Combination Analysis",
-                "description": "Analyze combinations of values that satisfy multiple adjacent cages",
+            "multi_cage_analysis": {
+                "name": "Multi-Cage Analysis",
+                "description": "Analyze interactions between overlapping or adjacent cages",
                 "fol_rule": """
-                ∀cage_set{c1,c2,...,cn} ∀shared_region(R):
-                    [∀ci ∈ cage_set: intersects(ci, R)]
-                    ∧ [limited_value_combinations(cage_set, R)]
-                    → [∀cell(r,col) ∈ R: restrict_candidates_to_valid_combinations(cell(r,col))]
+                ∀cages{c1,c2} ∀shared_cells(S) ∀values(V):
+                    [cells_in_cage(c1) ∩ cells_in_cage(c2) = S] ∧ [|S| ≥ 1]
+                    ∧ [∀cell ∈ S: possible_values_for_cage(cell, c1) ∩ possible_values_for_cage(cell, c2) = V]
+                    → [∀cell ∈ S: candidates(cell) := candidates(cell) ∩ V]
                 """,
-                "logic": "When multiple cages share cells/constraints, limit candidates to valid combinations",
+                "logic": "Constrain shared cells based on requirements from multiple cages",
                 "complexity": "moderate",
                 "composite": True,
-                "composed_of": ["two_cell_addition_cage", "two_cell_subtraction_cage", "cage_boundary_constraint"]
+                "composed_of": ["cage_elimination", "hidden_single_row", "hidden_single_column"]
             },
             
-            "advanced_cage_arithmetic": {
-                "name": "Advanced Cage Arithmetic",
-                "description": "Use advanced arithmetic reasoning for larger cages",
+            "advanced_factorization": {
+                "name": "Advanced Factorization",
+                "description": "Use prime factorization and divisibility rules for multiplication/division cages",
                 "fol_rule": """
-                ∀cage(c) ∀target(t) ∀operation(op) ∀partial_assignment(P):
-                    [cage_size(c) ≥ 3] ∧ [cage_target(c) = t] ∧ [cage_operation(c) = op]
-                    ∧ [some_cells_assigned(cage(c), P)]
-                    → [∀unassigned_cell ∈ cage(c): 
-                       candidates(unassigned_cell) = valid_completions(P, t, op, cage(c))]
+                ∀cage(c) ∀operation(multiply) ∀target(t) ∀cells(C) ∀prime_factors(P):
+                    [cage_operation(c) = multiply] ∧ [cage_target(c) = t] 
+                    ∧ [prime_factorization(t) = P] ∧ [|C| = |P|]
+                    → [if unique_assignment_exists(P, C, grid_constraints) 
+                       then assign_prime_factors(C, P)]
                 """,
-                "logic": "For larger cages with partial assignments, calculate valid completions",
+                "logic": "Use prime factorization to solve multiplication cages when factors are constrained",
                 "complexity": "moderate",
                 "composite": True,
-                "composed_of": ["simple_cage_arithmetic", "cage_completion", "naked_single"]
+                "composed_of": ["basic_multiplication_cage", "basic_division_cage", "naked_single"]
             },
             
-            "cage_sum_distribution": {
-                "name": "Cage Sum Distribution",
-                "description": "Distribute large sums across cage cells considering row/column constraints",
+            "constraint_propagation": {
+                "name": "Constraint Propagation",
+                "description": "Propagate constraints through the grid using cage and Latin square rules",
                 "fol_rule": """
-                ∀cage(c) ∀addition_target(t) ∀grid_size(n):
-                    [cage_operation(c) = addition] ∧ [cage_target(c) = t] ∧ [cage_size(c) ≥ 3]
-                    ∧ [t > cage_size(c) × n/2]  // Large sum constraint
-                    → [∀cell(r,col) ∈ cage(c): 
-                       candidates(cell(r,col)) ⊆ {v : v ≥ minimum_required_for_large_sum(t, cage_size(c), n)}]
+                ∀cell(r,c) ∀value(v) ∀affected_cells(A):
+                    [assign(cell(r,c), v)] ∧ [A = cells_affected_by_assignment(r,c,v)]
+                    → [∀cell' ∈ A: propagate_constraints(cell', v, cage_constraints, latin_square_constraints)]
                 """,
-                "logic": "For large sum cages, cells must contain relatively large values",
+                "logic": "When assigning a value, propagate all resulting constraints through the grid",
                 "complexity": "moderate",
                 "composite": True,
-                "composed_of": ["two_cell_addition_cage", "hidden_single_row", "hidden_single_column"]
+                "composed_of": ["eliminate_by_row", "eliminate_by_column", "cage_elimination"]
             },
             
-            "cage_product_factorization": {
-                "name": "Cage Product Factorization",
-                "description": "Factor multiplication targets to find valid number combinations",
+            "partial_sum_analysis": {
+                "name": "Partial Sum Analysis",
+                "description": "Analyze partial sums in addition cages to constrain remaining cells",
                 "fol_rule": """
-                ∀cage(c) ∀multiplication_target(t) ∀grid_size(n):
-                    [cage_operation(c) = multiplication] ∧ [cage_target(c) = t]
-                    ∧ [factorizations(t) = F] ∧ [valid_in_grid_size(F, n)]
-                    → [∀cell(r,col) ∈ cage(c): 
-                       candidates(cell(r,col)) ⊆ ⋃{factors(f) : f ∈ F ∧ compatible_with_cage_size(f, cage(c))}]
+                ∀cage(c) ∀assigned_subset(A) ∀remaining_cells(R) ∀partial_sum(ps) ∀target(t):
+                    [cage_operation(c) = add] ∧ [A ⊂ cells_in_cage(c)] ∧ [R = cells_in_cage(c) \ A]
+                    ∧ [sum(values(A)) = ps] ∧ [cage_target(c) = t] ∧ [remaining_target = t - ps]
+                    → [constrain_cells_by_remaining_sum(R, remaining_target, |R|)]
                 """,
-                "logic": "Use prime factorization to limit candidates in multiplication cages",
-                "complexity": "moderate", 
-                "composite": True,
-                "composed_of": ["two_cell_multiplication_cage", "forced_candidate_cage", "eliminate_by_row"]
-            },
-            
-            "naked_pair_in_cage": {
-                "name": "Naked Pair in Cage",
-                "description": "Find pairs of cells in cages with identical candidate sets",
-                "fol_rule": """
-                ∀cage(c) ∀cell(r1,c1) ∀cell(r2,c2) ∀value_set{v1,v2}:
-                    [cell(r1,c1) ∈ cage(c)] ∧ [cell(r2,c2) ∈ cage(c)] ∧ [(r1,c1) ≠ (r2,c2)]
-                    ∧ [candidates(cell(r1,c1)) = {v1,v2}] ∧ [candidates(cell(r2,c2)) = {v1,v2}]
-                    ∧ [same_row(r1,r2) ∨ same_column(c1,c2)]
-                    → [∀cell(r',c') ∈ same_line(r1,c1,r2,c2): 
-                       cell(r',c') ≠ cell(r1,c1) ∧ cell(r',c') ≠ cell(r2,c2) 
-                       → remove_candidate(cell(r',c'), v1) ∧ remove_candidate(cell(r',c'), v2)]
-                """,
-                "logic": "If two cells in same row/column have identical two-candidate sets, eliminate those values elsewhere",
+                "logic": "Use partial sums to constrain the possible values in remaining cage cells",
                 "complexity": "moderate",
                 "composite": True,
-                "composed_of": ["naked_single", "eliminate_by_row", "eliminate_by_column"]
+                "composed_of": ["simple_addition_cage", "cage_completion", "constraint_propagation"]
             },
             
-            "hidden_pair_in_cage": {
-                "name": "Hidden Pair in Cage",
-                "description": "Find pairs of values that can only go in two specific cells",
+            "quotient_remainder_analysis": {
+                "name": "Quotient-Remainder Analysis",
+                "description": "Use division properties to constrain values in division cages",
                 "fol_rule": """
-                ∀region(R) ∀value_set{v1,v2} ∀cell_set{(r1,c1),(r2,c2)}:
-                    [region(R) = row(r) ∨ region(R) = column(c)]
-                    ∧ [∀v ∈ {v1,v2}: ∀cell(r,c) ∈ region(R): 
-                       v ∈ candidates(cell(r,c)) → (r,c) ∈ {(r1,c1),(r2,c2)}]
-                    → [∀i ∈ {1,2}: candidates(cell(ri,ci)) := candidates(cell(ri,ci)) ∩ {v1,v2}]
+                ∀cage(c) ∀operation(divide) ∀target(t) ∀dividend(d) ∀divisor(s):
+                    [cage_operation(c) = divide] ∧ [cage_target(c) = t]
+                    ∧ [dividend_cell ∈ cells_in_cage(c)] ∧ [divisor_cell ∈ cells_in_cage(c)]
+                    ∧ [d = value(dividend_cell)] ∧ [s = value(divisor_cell)]
+                    → [d = t × s] ∧ [constrain_by_divisibility(d, s, t)]
                 """,
-                "logic": "If two values can only be placed in two cells, remove all other candidates from those cells",
+                "logic": "Use divisibility constraints to solve division cages",
                 "complexity": "moderate",
                 "composite": True,
-                "composed_of": ["hidden_single_row", "hidden_single_column", "cage_boundary_constraint"]
+                "composed_of": ["basic_division_cage", "advanced_factorization"]
             },
             
-            "cage_constraint_propagation": {
-                "name": "Cage Constraint Propagation",
-                "description": "Propagate constraints from completed cages to adjacent regions",
+            "cage_intersection": {
+                "name": "Cage Intersection",
+                "description": "Analyze cells that belong to multiple constraint regions",
                 "fol_rule": """
-                ∀cage(c1) ∀cage(c2) ∀shared_line(L):
-                    [cage_partially_solved(c1)] ∧ [shares_line(c1, c2, L)]
-                    ∧ [known_values_in_cage(c1) = V]
-                    → [∀cell(r,col) ∈ intersection(c2, L): 
-                       ∀v ∈ V: remove_candidate(cell(r,col), v)]
+                ∀cell(r,c) ∀cages{c1,c2,...,cn} ∀constraints{con1,con2,...,conn}:
+                    [∀i ∈ {1,...,n}: cell(r,c) ∈ cage(ci)] ∧ [∀i: constraint(ci) = coni]
+                    → [candidates(cell(r,c)) := ⋂{values_satisfying_constraint(coni) : i ∈ {1,...,n}}]
                 """,
-                "logic": "When cage values are determined, propagate exclusions to intersecting cages",
+                "logic": "Cells in multiple cages must satisfy all cage constraints simultaneously",
                 "complexity": "moderate",
                 "composite": True,
-                "composed_of": ["cage_completion", "eliminate_by_row", "eliminate_by_column"]
+                "composed_of": ["multi_cage_analysis", "constraint_propagation"]
             },
             
-            "division_remainder_analysis": {
-                "name": "Division Remainder Analysis",
-                "description": "Use division remainders to constrain candidate values",
+            "elimination_by_exhaustion": {
+                "name": "Elimination by Exhaustion",
+                "description": "Try all possibilities for a cell and eliminate those that lead to contradictions",
                 "fol_rule": """
-                ∀cage(c) ∀division_target(t) ∀grid_size(n):
-                    [cage_operation(c) = division] ∧ [cage_target(c) = t] ∧ [cage_size(c) = 2]
-                    ∧ [cell(r1,c1) ∈ cage(c)] ∧ [cell(r2,c2) ∈ cage(c)]
-                    → [candidates(cell(r1,c1)) = {v1 : ∃v2 ∈ [1,n], (v1/v2 = t ∨ v2/v1 = t) 
-                       ∧ integer_division(v1,v2) ∧ valid_in_context(v1,v2)}]
+                ∀cell(r,c) ∀candidates{v1,v2,...,vk} ∀grid_state(G):
+                    [candidates(cell(r,c)) = {v1,v2,...,vk}] ∧ [k ≤ 3]
+                    → [∀vi: if assignment_leads_to_contradiction(cell(r,c), vi, G) 
+                       then remove_candidate(cell(r,c), vi)]
                 """,
-                "logic": "For division cages, ensure quotients are exact integers with valid grid constraints",
+                "logic": "Remove candidates that lead to contradictions when tested",
                 "complexity": "moderate",
                 "composite": True,
-                "composed_of": ["two_cell_division_cage", "cage_boundary_constraint", "naked_single"]
+                "composed_of": ["constraint_propagation", "cage_elimination", "naked_single"]
             },
             
-            "large_cage_symmetry": {
-                "name": "Large Cage Symmetry",
-                "description": "Use symmetry patterns in large cages to eliminate candidates",
+            "symmetric_cage_analysis": {
+                "name": "Symmetric Cage Analysis", 
+                "description": "Use symmetry properties in cage arrangements to deduce values",
                 "fol_rule": """
-                ∀cage(c) ∀symmetry_pattern(P):
-                    [cage_size(c) ≥ 4] ∧ [has_symmetry(cage(c), P)]
-                    ∧ [symmetric_positions(cage(c)) = SP]
-                    → [∀(pos1, pos2) ∈ SP: 
-                       candidates(pos1) must_be_compatible_with candidates(pos2)]
+                ∀cages{c1,c2} ∀symmetry_relation(R):
+                    [symmetric_cages(c1, c2, R)] ∧ [cage_operation(c1) = cage_operation(c2)]
+                    ∧ [cage_target(c1) = cage_target(c2)] ∧ [|cells_in_cage(c1)| = |cells_in_cage(c2)|]
+                    → [apply_symmetry_constraints(c1, c2, R)]
                 """,
-                "logic": "In symmetric cage arrangements, corresponding positions must have compatible values",
+                "logic": "Use symmetrical cage properties to constrain solutions",
                 "complexity": "moderate",
                 "composite": True,
-                "composed_of": ["advanced_cage_arithmetic", "multi_cage_intersection", "naked_pair_in_cage"]
-            },
-            
-            "cage_endpoint_analysis": {
-                "name": "Cage Endpoint Analysis",
-                "description": "Analyze extreme values (min/max) that can appear in cage endpoints",
-                "fol_rule": """
-                ∀cage(c) ∀operation(op) ∀target(t) ∀grid_size(n):
-                    [cage_operation(c) = op] ∧ [cage_target(c) = t]
-                    ∧ [extreme_value_constraints(op, t, n) = EC]
-                    → [∀cell(r,col) ∈ cage(c): 
-                       candidates(cell(r,col)) ⊆ feasible_range(EC, cage_size(c))]
-                """,
-                "logic": "Use min/max analysis to constrain possible values in cage cells",
-                "complexity": "moderate",
-                "composite": True,
-                "composed_of": ["cage_sum_distribution", "cage_product_factorization", "forced_candidate_cage"]
+                "composed_of": ["multi_cage_analysis", "constraint_propagation"]
             }
         }
     
@@ -216,3 +174,52 @@ class ModerateKenKenStrategiesKB:
     
     def get_easy_strategies(self):
         return self.easy_kb.get_all_strategies()
+    
+    def get_strategy_description(self, strategy_name: str) -> str:
+        """Get description for a strategy"""
+        strategy = self.strategies.get(strategy_name)
+        if strategy:
+            return strategy.get('description', f'Strategy: {strategy_name}')
+        return f'Strategy: {strategy_name}'
+
+    def get_strategy_patterns(self, strategy_name: str) -> List[str]:
+        """Get applicable patterns for this strategy"""
+        if 'cage' in strategy_name:
+            return ['cage', 'arithmetic', 'constraint']
+        elif 'elimination' in strategy_name:
+            return ['elimination', 'constraint']
+        elif 'factorization' in strategy_name:
+            return ['factorization', 'multiplication', 'prime']
+        elif 'propagation' in strategy_name:
+            return ['propagation', 'constraint', 'cascade']
+        elif 'analysis' in strategy_name:
+            return ['analysis', 'deduction', 'complex']
+        else:
+            return ['moderate', 'intermediate']
+
+    def get_strategy_prerequisites(self, strategy_name: str) -> List[str]:
+        """Get prerequisite strategies for this strategy"""
+        strategy = self.strategies.get(strategy_name)
+        if strategy and strategy.get('composite', False):
+            return strategy.get('composed_of', [])
+        
+        # For non-composite strategies, return basic prerequisites
+        basic_prereqs = ['naked_single', 'single_cell_cage']
+        if strategy_name not in basic_prereqs:
+            return basic_prereqs
+        return []
+    
+    def get_operations_used(self, strategy_name: str) -> List[str]:
+        """Get arithmetic operations used by this strategy"""
+        if 'addition' in strategy_name or 'sum' in strategy_name:
+            return ['add']
+        elif 'subtraction' in strategy_name:
+            return ['subtract']
+        elif 'multiplication' in strategy_name or 'factorization' in strategy_name:
+            return ['multiply']
+        elif 'division' in strategy_name or 'quotient' in strategy_name:
+            return ['divide']
+        elif 'arithmetic' in strategy_name:
+            return ['add', 'subtract', 'multiply', 'divide']
+        else:
+            return []

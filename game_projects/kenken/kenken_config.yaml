@@ -1,0 +1,33 @@
+
+project:
+  name: "mnist-kenken"
+  output_dir: "./output"
+  data_dir: "./data"
+  logs_dir: "./logs"
+
+generation:
+  num_puzzles:
+    easy: 5
+    moderate: 3
+    hard: 2
+  grid_sizes:
+    easy: [4, 5]
+    moderate: [6] 
+    hard: [7]
+
+validation:
+  strict_mode: true
+  check_uniqueness: true
+  verify_solvability: true
+  validate_strategies: true
+  max_solve_time_seconds: 45
+
+output:
+  formats:
+    json: true
+  images:
+    save_mnist_puzzles: true
+
+logging:
+  level: "INFO"
+  console_output: true

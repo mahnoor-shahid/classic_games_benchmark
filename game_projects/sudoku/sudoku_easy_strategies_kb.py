@@ -3,6 +3,7 @@
 Knowledge Base for Easy Sudoku Solving Strategies
 Contains First-Order Logic (FOL) rules for basic Sudoku solving techniques
 """
+from typing import List, Dict
 
 class EasyStrategiesKB:
     def __init__(self):
@@ -143,3 +144,38 @@ class EasyStrategiesKB:
     
     def get_all_strategies(self):
         return self.strategies
+    
+    def get_strategy_description(self, strategy_name: str) -> str:
+        """Get description for a strategy"""
+        strategy = self.strategies.get(strategy_name)
+        if strategy:
+            return strategy.get('description', f'Strategy: {strategy_name}')
+        return f'Strategy: {strategy_name}'
+
+    def get_strategy_patterns(self, strategy_name: str) -> List[str]:
+        """Get applicable patterns for this strategy"""
+        # Return common patterns that this strategy can work with
+        if 'row' in strategy_name:
+            return ['row', 'horizontal']
+        elif 'column' in strategy_name:
+            return ['column', 'vertical']
+        elif 'box' in strategy_name:
+            return ['box', 'square']
+        elif 'pair' in strategy_name:
+            return ['pair', 'dual']
+        elif 'wing' in strategy_name:
+            return ['wing', 'triangle']
+        else:
+            return ['general', 'universal']
+
+    def get_strategy_prerequisites(self, strategy_name: str) -> List[str]:
+        """Get prerequisite strategies for this strategy"""
+        strategy = self.strategies.get(strategy_name)
+        if strategy and strategy.get('composite', False):
+            return strategy.get('composed_of', [])
+        
+        # For non-composite strategies, return basic prerequisites
+        basic_prereqs = ['naked_single']
+        if strategy_name not in basic_prereqs:
+            return basic_prereqs
+        return []

@@ -1,13 +1,11 @@
 # kenken_easy_strategies_kb.py
 """
-Knowledge Base for Easy KenKen Solving Strategies
-Contains First-Order Logic (FOL) rules for basic KenKen solving techniques
-KenKen rules: Fill grid with numbers 1-N (where N is grid size) such that:
-1. No number repeats in any row or column
-2. Each cage (outlined region) contains numbers that satisfy the given operation and target
+Knowledge Base for Easy Ken Ken Solving Strategies
+Contains First-Order Logic (FOL) rules for basic Ken Ken solving techniques
 """
+from typing import List, Dict
 
-class EasyKenKenStrategiesKB:
+class KenKenEasyStrategiesKB:
     def __init__(self):
         self.strategies = {
             "single_cell_cage": {
@@ -15,7 +13,7 @@ class EasyKenKenStrategiesKB:
                 "description": "A cage with only one cell must contain the target value",
                 "fol_rule": """
                 ∀cage(c) ∀cell(r,col) ∀target(t):
-                    [cage_size(c) = 1] ∧ [cell(r,col) ∈ cage(c)] ∧ [cage_target(c) = t]
+                    [|cells_in_cage(c)| = 1] ∧ [cell(r,col) ∈ cage(c)] ∧ [cage_target(c) = t]
                     → [assign(cell(r,col), t)]
                 """,
                 "logic": "If a cage contains only one cell, that cell must equal the cage's target value",
@@ -23,71 +21,44 @@ class EasyKenKenStrategiesKB:
                 "composite": False
             },
             
-            "two_cell_addition_cage": {
-                "name": "Two Cell Addition Cage",
-                "description": "Solve two-cell addition cages with limited possibilities",
+            "simple_addition_cage": {
+                "name": "Simple Addition Cage",
+                "description": "Deduce values in small addition cages with limited possibilities",
                 "fol_rule": """
-                ∀cage(c) ∀cell(r1,c1) ∀cell(r2,c2) ∀target(t) ∀grid_size(n):
-                    [cage_size(c) = 2] ∧ [cage_operation(c) = addition] ∧ [cage_target(c) = t]
-                    ∧ [cell(r1,c1) ∈ cage(c)] ∧ [cell(r2,c2) ∈ cage(c)]
-                    → [candidates(cell(r1,c1)) = {v1 : ∃v2 ∈ [1,n], v1+v2=t ∧ v1≠v2 ∧ valid_in_context(v1,v2)}]
+                ∀cage(c) ∀operation(add) ∀target(t) ∀grid_size(n):
+                    [cage_operation(c) = add] ∧ [cage_target(c) = t] ∧ [|cells_in_cage(c)| = 2]
+                    ∧ [∀v ∈ valid_values: 1 ≤ v ≤ n]
+                    → [if only_one_combination_possible(c, t, add) then assign_combination(c)]
                 """,
-                "logic": "For two-cell addition cages, find all valid number pairs that sum to target",
+                "logic": "If an addition cage has only one possible combination of values, assign them",
                 "complexity": "easy",
                 "composite": False
             },
             
-            "two_cell_subtraction_cage": {
-                "name": "Two Cell Subtraction Cage", 
+            "simple_subtraction_cage": {
+                "name": "Simple Subtraction Cage",
                 "description": "Solve two-cell subtraction cages",
                 "fol_rule": """
-                ∀cage(c) ∀cell(r1,c1) ∀cell(r2,c2) ∀target(t) ∀grid_size(n):
-                    [cage_size(c) = 2] ∧ [cage_operation(c) = subtraction] ∧ [cage_target(c) = t]
-                    ∧ [cell(r1,c1) ∈ cage(c)] ∧ [cell(r2,c2) ∈ cage(c)]
-                    → [candidates(cell(r1,c1)) = {v1 : ∃v2 ∈ [1,n], |v1-v2|=t ∧ valid_in_context(v1,v2)}]
+                ∀cage(c) ∀operation(subtract) ∀target(t) ∀cells{(r1,c1),(r2,c2)}:
+                    [cage_operation(c) = subtract] ∧ [cage_target(c) = t] 
+                    ∧ [cells_in_cage(c) = {(r1,c1),(r2,c2)}]
+                    → [assign_values_such_that |value(r1,c1) - value(r2,c2)| = t]
                 """,
-                "logic": "For two-cell subtraction cages, find pairs where absolute difference equals target",
-                "complexity": "easy", 
-                "composite": False
-            },
-            
-            "two_cell_multiplication_cage": {
-                "name": "Two Cell Multiplication Cage",
-                "description": "Solve two-cell multiplication cages",
-                "fol_rule": """
-                ∀cage(c) ∀cell(r1,c1) ∀cell(r2,c2) ∀target(t) ∀grid_size(n):
-                    [cage_size(c) = 2] ∧ [cage_operation(c) = multiplication] ∧ [cage_target(c) = t]
-                    ∧ [cell(r1,c1) ∈ cage(c)] ∧ [cell(r2,c2) ∈ cage(c)]
-                    → [candidates(cell(r1,c1)) = {v1 : ∃v2 ∈ [1,n], v1×v2=t ∧ valid_in_context(v1,v2)}]
-                """,
-                "logic": "For two-cell multiplication cages, find pairs that multiply to target",
-                "complexity": "easy",
-                "composite": False
-            },
-            
-            "two_cell_division_cage": {
-                "name": "Two Cell Division Cage",
-                "description": "Solve two-cell division cages",
-                "fol_rule": """
-                ∀cage(c) ∀cell(r1,c1) ∀cell(r2,c2) ∀target(t) ∀grid_size(n):
-                    [cage_size(c) = 2] ∧ [cage_operation(c) = division] ∧ [cage_target(c) = t]
-                    ∧ [cell(r1,c1) ∈ cage(c)] ∧ [cell(r2,c2) ∈ cage(c)]
-                    → [candidates(cell(r1,c1)) = {v1 : ∃v2 ∈ [1,n], (v1/v2=t ∨ v2/v1=t) ∧ valid_in_context(v1,v2)}]
-                """,
-                "logic": "For two-cell division cages, find pairs where one divided by other equals target",
+                "logic": "In subtraction cages, assign values where the absolute difference equals the target",
                 "complexity": "easy",
                 "composite": False
             },
             
             "naked_single": {
                 "name": "Naked Single",
-                "description": "A cell has only one possible value after applying cage constraints",
+                "description": "A cell has only one possible value based on cage and grid constraints",
                 "fol_rule": """
-                ∀cell(r,c) ∀value(v):
-                    [candidates(cell(r,c)) = {v}] → [assign(cell(r,c), v)]
+                ∀cell(r,c) ∀value(v) ∀grid_size(n):
+                    [candidates(cell(r,c)) = {v}] ∧ [1 ≤ v ≤ n]
+                    → [assign(cell(r,c), v)]
                 """,
-                "logic": "If a cell has only one candidate value, assign that value to the cell",
-                "complexity": "easy",
+                "logic": "If a cell has only one candidate value, assign that value",
+                "complexity": "easy", 
                 "composite": False
             },
             
@@ -117,81 +88,70 @@ class EasyKenKenStrategiesKB:
                 "composite": False
             },
             
-            "cage_completion": {
-                "name": "Cage Completion",
-                "description": "Fill remaining cells when cage is almost complete",
-                "fol_rule": """
-                ∀cage(c) ∀cell(r,col):
-                    [cells_filled(cage(c)) = cage_size(c) - 1] ∧ [cell(r,col) ∈ cage(c)] ∧ [empty(cell(r,col))]
-                    → [assign(cell(r,col), required_value_to_complete_cage(c))]
-                """,
-                "logic": "When all but one cells in a cage are filled, calculate the required value for the last cell",
-                "complexity": "easy",
-                "composite": False
-            },
-            
             "eliminate_by_row": {
                 "name": "Eliminate Candidates by Row",
                 "description": "Remove candidates that already exist in the same row",
                 "fol_rule": """
                 ∀row(r) ∀cell(r,c1) ∀cell(r,c2) ∀value(v):
-                    [c1 ≠ c2] ∧ [assigned(cell(r,c1), v)] → [remove_candidate(cell(r,c2), v)]
+                    [c1 ≠ c2] ∧ [assigned(cell(r,c1), v)] 
+                    → [remove_candidate(cell(r,c2), v)]
                 """,
-                "logic": "If a value is assigned to a cell in a row, remove it from candidates of all other cells in that row",
+                "logic": "If a value is assigned in a row, remove it from candidates of other cells in that row",
                 "complexity": "easy",
                 "composite": False
             },
             
             "eliminate_by_column": {
                 "name": "Eliminate Candidates by Column",
-                "description": "Remove candidates that already exist in the same column", 
+                "description": "Remove candidates that already exist in the same column",
                 "fol_rule": """
                 ∀column(c) ∀cell(r1,c) ∀cell(r2,c) ∀value(v):
-                    [r1 ≠ r2] ∧ [assigned(cell(r1,c), v)] → [remove_candidate(cell(r2,c), v)]
+                    [r1 ≠ r2] ∧ [assigned(cell(r1,c), v)]
+                    → [remove_candidate(cell(r2,c), v)]
                 """,
-                "logic": "If a value is assigned to a cell in a column, remove it from candidates of all other cells in that column",
+                "logic": "If a value is assigned in a column, remove it from candidates of other cells in that column",
                 "complexity": "easy",
                 "composite": False
             },
             
-            "simple_cage_arithmetic": {
-                "name": "Simple Cage Arithmetic",
-                "description": "Apply basic arithmetic constraints within cages",
+            "cage_completion": {
+                "name": "Cage Completion",
+                "description": "Fill remaining cells when cage has only one possibility left",
                 "fol_rule": """
-                ∀cage(c) ∀operation(op) ∀target(t):
-                    [cage_operation(c) = op] ∧ [cage_target(c) = t]
-                    → [∀assignment_to_cage(c): evaluate(assignment, op) = t]
+                ∀cage(c) ∀remaining_cells(R) ∀assigned_sum(s) ∀target(t):
+                    [|R| = 1] ∧ [∀cell ∈ R: empty(cell)] ∧ [cage_operation(c) = add]
+                    ∧ [current_sum(c) = s] ∧ [cage_target(c) = t]
+                    → [assign(remaining_cell, t - s)]
                 """,
-                "logic": "All values assigned to a cage must satisfy the cage's arithmetic constraint",
-                "complexity": "easy", 
-                "composite": False
-            },
-            
-            "forced_candidate_cage": {
-                "name": "Forced Candidate in Cage",
-                "description": "When only one arrangement satisfies cage constraints",
-                "fol_rule": """
-                ∀cage(c) ∀cell(r,col) ∀value(v):
-                    [∃!assignment: satisfies_cage_constraint(assignment, cage(c))]
-                    ∧ [cell(r,col) ∈ cage(c)] ∧ [assignment[cell(r,col)] = v]
-                    → [assign(cell(r,col), v)]
-                """,
-                "logic": "If only one value arrangement satisfies a cage constraint, assign those values",
+                "logic": "When a cage has one empty cell left, calculate its value from the target and current sum",
                 "complexity": "easy",
                 "composite": False
             },
             
-            "cage_boundary_constraint": {
-                "name": "Cage Boundary Constraint",
-                "description": "Use cage boundaries to limit candidate propagation",
+            "basic_multiplication_cage": {
+                "name": "Basic Multiplication Cage",
+                "description": "Solve simple multiplication cages with obvious factors",
                 "fol_rule": """
-                ∀cage(c1) ∀cage(c2) ∀cell(r1,col1) ∀cell(r2,col2) ∀value(v):
-                    [cell(r1,col1) ∈ cage(c1)] ∧ [cell(r2,col2) ∈ cage(c2)] ∧ [c1 ≠ c2]
-                    ∧ [same_row(r1,r2) ∨ same_column(col1,col2)]
-                    ∧ [assigned(cell(r1,col1), v)]
-                    → [remove_candidate(cell(r2,col2), v)]
+                ∀cage(c) ∀operation(multiply) ∀target(t) ∀grid_size(n):
+                    [cage_operation(c) = multiply] ∧ [cage_target(c) = t] 
+                    ∧ [|cells_in_cage(c)| = 2] ∧ [target_has_unique_factorization_in_range(t, n)]
+                    → [assign_unique_factor_combination(c, t)]
                 """,
-                "logic": "Values cannot repeat in same row/column even across different cages",
+                "logic": "If a multiplication cage has a unique factorization within the grid range, assign those factors",
+                "complexity": "easy",
+                "composite": False
+            },
+            
+            "basic_division_cage": {
+                "name": "Basic Division Cage",
+                "description": "Solve simple division cages with two cells",
+                "fol_rule": """
+                ∀cage(c) ∀operation(divide) ∀target(t) ∀cells{(r1,c1),(r2,c2)}:
+                    [cage_operation(c) = divide] ∧ [cage_target(c) = t]
+                    ∧ [cells_in_cage(c) = {(r1,c1),(r2,c2)}]
+                    → [assign_values_such_that max(values)/min(values) = t]
+                """,
+                "logic": "In division cages, assign values where the larger divided by smaller equals the target",
                 "complexity": "easy",
                 "composite": False
             }
@@ -205,3 +165,54 @@ class EasyKenKenStrategiesKB:
     
     def get_all_strategies(self):
         return self.strategies
+    
+    def get_strategy_description(self, strategy_name: str) -> str:
+        """Get description for a strategy"""
+        strategy = self.strategies.get(strategy_name)
+        if strategy:
+            return strategy.get('description', f'Strategy: {strategy_name}')
+        return f'Strategy: {strategy_name}'
+
+    def get_strategy_patterns(self, strategy_name: str) -> List[str]:
+        """Get applicable patterns for this strategy"""
+        if 'row' in strategy_name:
+            return ['row', 'horizontal']
+        elif 'column' in strategy_name:
+            return ['column', 'vertical']
+        elif 'cage' in strategy_name:
+            return ['cage', 'arithmetic']
+        elif 'addition' in strategy_name or 'add' in strategy_name:
+            return ['addition', 'sum']
+        elif 'subtraction' in strategy_name or 'subtract' in strategy_name:
+            return ['subtraction', 'difference']
+        elif 'multiplication' in strategy_name or 'multiply' in strategy_name:
+            return ['multiplication', 'product']
+        elif 'division' in strategy_name or 'divide' in strategy_name:
+            return ['division', 'quotient']
+        else:
+            return ['general', 'basic']
+
+    def get_strategy_prerequisites(self, strategy_name: str) -> List[str]:
+        """Get prerequisite strategies for this strategy"""
+        strategy = self.strategies.get(strategy_name)
+        if strategy and strategy.get('composite', False):
+            return strategy.get('composed_of', [])
+        
+        # For non-composite strategies, return basic prerequisites
+        basic_prereqs = ['naked_single', 'single_cell_cage']
+        if strategy_name not in basic_prereqs:
+            return ['naked_single']
+        return []
+    
+    def get_operations_used(self, strategy_name: str) -> List[str]:
+        """Get arithmetic operations used by this strategy"""
+        if 'addition' in strategy_name or 'add' in strategy_name:
+            return ['add']
+        elif 'subtraction' in strategy_name or 'subtract' in strategy_name:
+            return ['subtract']
+        elif 'multiplication' in strategy_name or 'multiply' in strategy_name:
+            return ['multiply']
+        elif 'division' in strategy_name or 'divide' in strategy_name:
+            return ['divide']
+        else:
+            return []

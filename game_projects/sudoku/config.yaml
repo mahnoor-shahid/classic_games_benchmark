@@ -45,7 +45,7 @@ generation:
     use_augmentation: false
   num_puzzles:
     easy: 10
-    hard: 2
+    hard: 10
     moderate: 10
   strategies:
     custom_strategy_weights:

@@ -1,0 +1,89 @@
+generation:
+  complexity:
+    easy:
+      constraint_density: 0.3
+      max_filled_cells_ratio: 0.6
+      max_strategies: 3
+      min_filled_cells_ratio: 0.4
+      prefer_single_strategy: true
+    moderate:
+      allow_composite_strategies: true
+      constraint_density: 0.4
+      max_filled_cells_ratio: 0.45
+      max_strategies: 5
+      min_filled_cells_ratio: 0.25
+    hard:
+      constraint_density: 0.5
+      max_filled_cells_ratio: 0.35
+      max_strategies: 7
+      min_filled_cells_ratio: 0.15
+      require_advanced_strategies: true
+  constraints:
+    generation:
+      avoid_isolated_constraints: true
+      max_constraints_per_puzzle: 20
+      min_constraints_per_puzzle: 3
+      prefer_constraint_chains: true
+    visualization:
+      show_inequality_symbols: true
+      symbol_color: red
+      symbol_font: Arial Bold
+      symbol_position: between_cells
+      symbol_size: 18
+      use_text_symbols: true  # Use text instead of symbols
+      text_greater: "GT"      # Greater than text
+      text_less: "LT"         # Less than text
+  mnist:
+    brightness_variation: 0.0
+    image_size: 28
+    noise_level: 0.0
+    rotation_angle: 0
+    use_augmentation: false
+    use_same_digits_for_puzzle_and_solution: true  # CRITICAL: Same digits for consistency
+    digit_mapping_seed: 42  # Ensure reproducible digit mappings
+  num_puzzles:
+    easy: 10
+    moderate: 8
+    hard: 5
+  puzzle_sizes:
+    easy: 5      # Changed from 4 to 5x5 for easy
+    moderate: 6  # Changed from 5 to 6x6 for moderate  
+    hard: 7      # Changed from 6 to 7x7 for hard
+logging:
+  console_output: true
+  file_output: true
+  level: INFO
+  log_file: mnist_futoshiki.log
+output:
+  formats:
+    csv: true
+    json: true
+  images:
+    cell_border_width: 2
+    compress_images: true
+    image_quality: 95
+    include_grid_lines: true
+    save_constraint_overlay: true
+    save_mnist_puzzles: true
+    save_solution_images: true
+    show_constraint_text: true  # Show text constraints
+project:
+  data_dir: ./data
+  logs_dir: ./logs
+  name: mnist-futoshiki
+  output_dir: ./output
+  version: 2.1.0
+validation:
+  check_mnist_consistency: true
+  check_uniqueness: true
+  max_solve_time_seconds: 120  # Increased for larger puzzles
+  quality:
+    avoid_guessing: true
+    ensure_constraint_consistency: true
+    max_puzzle_difficulty_score: 0.95
+    min_puzzle_difficulty_score: 0.25
+    require_human_solvable: true
+    validate_strategy_compositionality: true  # Ensure strategies compose correctly
+  strict_mode: true
+  validate_strategies: true
+  verify_solvability: true

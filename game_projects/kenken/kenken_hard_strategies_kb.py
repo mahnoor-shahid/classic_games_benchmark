@@ -1,259 +1,63 @@
 # kenken_hard_strategies_kb.py
 """
-Knowledge Base for Hard KenKen Solving Strategies
+Knowledge Base for Hard Ken Ken Solving Strategies
 Contains FOL rules that compose easy and moderate strategies for advanced techniques
 """
 
-from kenken_easy_strategies_kb import EasyKenKenStrategiesKB
-from kenken_moderate_strategies_kb import ModerateKenKenStrategiesKB
+from kenken_easy_strategies_kb import KenKenEasyStrategiesKB
+from kenken_moderate_strategies_kb import KenKenModerateStrategiesKB
+from typing import List, Dict
 
-class HardKenKenStrategiesKB:
+class KenKenHardStrategiesKB:
     def __init__(self):
-        self.easy_kb = EasyKenKenStrategiesKB()
-        self.moderate_kb = ModerateKenKenStrategiesKB()
+        self.easy_kb = KenKenEasyStrategiesKB()
+        self.moderate_kb = KenKenModerateStrategiesKB()
         self.strategies = {
-            "multi_cage_chain_analysis": {
-                "name": "Multi-Cage Chain Analysis",
-                "description": "Analyze chains of interdependent cages to propagate constraints",
+            "advanced_cage_chaining": {
+                "name": "Advanced Cage Chaining",
+                "description": "Chain constraints across multiple interconnected cages",
                 "fol_rule": """
-                ∀cage_chain{c1,c2,...,cn} ∀constraint_propagation(P):
-                    [∀i ∈ [1,n-1]: shares_constraint(ci, c(i+1))]
-                    ∧ [assignment_to_cage(c1) influences assignment_to_cage(cn)]
-                    ∧ [chain_constraint_analysis(cage_chain) = P]
-                    → [∀cage(ci) ∈ cage_chain: apply_chain_constraints(ci, P)]
+                ∀cage_chain{c1,c2,...,cn} ∀connecting_cells{s1,s2,...,s(n-1)} ∀constraints{con1,...,conn}:
+                    [∀i ∈ {1,...,n-1}: cells_in_cage(ci) ∩ cells_in_cage(c(i+1)) = {si}]
+                    ∧ [∀i: cage_constraint(ci) = coni]
+                    → [propagate_chain_constraints(cage_chain, connecting_cells, constraints)]
                 """,
-                "logic": "Use chains of cage dependencies to propagate constraints across multiple cages",
+                "logic": "Propagate constraints through chains of connected cages",
                 "complexity": "hard",
                 "composite": True,
-                "composed_of": ["multi_cage_intersection", "cage_constraint_propagation", "advanced_cage_arithmetic"]
+                "composed_of": ["multi_cage_analysis", "constraint_propagation", "cage_intersection"]
             },
             
-            "cage_forcing_chains": {
-                "name": "Cage Forcing Chains",
-                "description": "Use forcing chains through cages to eliminate candidates",
+            "complex_factorization_patterns": {
+                "name": "Complex Factorization Patterns",
+                "description": "Use advanced number theory for complex multiplication/division patterns",
                 "fol_rule": """
-                ∀cell(r,c) ∀value(v) ∀cage_chain{c1,c2,...,cn}:
-                    [assume(cell(r,c) = v) leads_to contradiction_through_chain(cage_chain)]
-                    ∨ [assume(cell(r,c) ≠ v) leads_to contradiction_through_chain(cage_chain)]
-                    → [determine_definitive_assignment(cell(r,c), v)]
+                ∀cage_set{c1,c2,...,ck} ∀target_set{t1,t2,...,tk} ∀operations{op1,op2,...,opk}:
+                    [∀i: cage_operation(ci) ∈ {multiply,divide}] ∧ [∀i: cage_target(ci) = ti]
+                    ∧ [mathematical_relationship_exists(t1,t2,...,tk)]
+                    → [exploit_number_theoretic_properties(cage_set, target_set, operations)]
                 """,
-                "logic": "Create forcing chains through cages to prove definitive cell assignments",
+                "logic": "Exploit number theoretic relationships between multiplication/division targets",
                 "complexity": "hard",
                 "composite": True,
-                "composed_of": ["cage_combination_analysis", "cage_constraint_propagation", "naked_pair_in_cage"]
+                "composed_of": ["advanced_factorization", "quotient_remainder_analysis", "complex_arithmetic_cages"]
             },
             
-            "advanced_cage_intersection": {
-                "name": "Advanced Cage Intersection",
-                "description": "Complex analysis of multiple cage intersections with constraint satisfaction",
+            "contradiction_analysis": {
+                "name": "Contradiction Analysis",
+                "description": "Find solutions by systematically exploring and eliminating contradictions",
                 "fol_rule": """
-                ∀cage_set{c1,c2,...,cn} ∀intersection_matrix(M) ∀constraint_set(CS):
-                    [∀ci,cj ∈ cage_set: intersection(ci,cj) ∈ M]
-                    ∧ [complex_constraint_satisfaction(cage_set, M) = CS]
-                    ∧ [global_consistency_check(CS) reveals contradictions]
-                    → [∀cell(r,col) ∈ ⋃intersection(cage_set): 
-                       eliminate_inconsistent_candidates(cell(r,col), CS)]
+                ∀assumption(A) ∀grid_state(G) ∀contradiction(CONTR):
+                    [make_assumption(A, G)] ∧ [propagate_fully(G, A)]
+                    ∧ [leads_to_contradiction(G, A, CONTR)]
+                    → [eliminate_assumption(A) ∧ assert_negation(¬A)]
                 """,
-                "logic": "Use complex intersection analysis to find global constraint violations",
+                "logic": "Use proof by contradiction to eliminate impossible assignments",
                 "complexity": "hard",
                 "composite": True,
-                "composed_of": ["multi_cage_intersection", "cage_combination_analysis", "hidden_pair_in_cage"]
-            },
-            
-            "cage_arithmetic_sequences": {
-                "name": "Cage Arithmetic Sequences",
-                "description": "Identify and exploit arithmetic sequences within and across cages",
-                "fol_rule": """
-                ∀cage_sequence{c1,c2,...,cn} ∀arithmetic_pattern(AP):
-                    [forms_arithmetic_sequence(cage_sequence, AP)]
-                    ∧ [sequence_constraints(AP) = SC]
-                    ∧ [arithmetic_progression_in_values(cage_sequence)]
-                    → [∀cage(ci) ∈ cage_sequence: 
-                       constrain_by_arithmetic_pattern(ci, AP, SC)]
-                """,
-                "logic": "Use arithmetic progressions and sequences to constrain cage values",
-                "complexity": "hard",
-                "composite": True,
-                "composed_of": ["cage_sum_distribution", "large_cage_symmetry", "advanced_cage_arithmetic"]
-            },
-            
-            "recursive_cage_solving": {
-                "name": "Recursive Cage Solving",
-                "description": "Recursively solve cages using backtracking with constraint propagation",
-                "fol_rule": """
-                ∀cage(c) ∀partial_solution(PS) ∀recursive_depth(d):
-                    [standard_techniques_exhausted(cage(c))]
-                    ∧ [try_assignment(cage(c), PS) at_depth(d)]
-                    ∧ [propagate_constraints(PS) through connected_cages(c)]
-                    → [if contradiction(PS): backtrack(d-1)
-                       else: continue_recursion(d+1) ∨ solution_found(PS)]
-                """,
-                "logic": "Use recursive solving with constraint propagation when standard techniques fail",
-                "complexity": "hard",
-                "composite": True,
-                "composed_of": ["cage_forcing_chains", "advanced_cage_intersection", "cage_constraint_propagation"]
-            },
-            
-            "cage_elimination_networks": {
-                "name": "Cage Elimination Networks",
-                "description": "Build networks of cage relationships for systematic elimination",
-                "fol_rule": """
-                ∀cage_network(N) ∀elimination_rules(ER) ∀network_topology(T):
-                    [build_cage_network(all_cages) = N with topology(T)]
-                    ∧ [network_based_elimination(N, T) = ER]
-                    ∧ [systematic_elimination_through_network(N, ER)]
-                    → [∀node(cage) ∈ N: apply_network_eliminations(cage, ER)]
-                """,
-                "logic": "Create systematic elimination networks based on cage relationships",
-                "complexity": "hard",
-                "composite": True,
-                "composed_of": ["multi_cage_chain_analysis", "advanced_cage_intersection", "cage_endpoint_analysis"]
-            },
-            
-            "constraint_satisfaction_pruning": {
-                "name": "Constraint Satisfaction Pruning",
-                "description": "Advanced pruning using constraint satisfaction programming techniques",
-                "fol_rule": """
-                ∀constraint_satisfaction_problem(CSP) ∀pruning_strategy(PS):
-                    [model_kenken_as_csp(grid, cages) = CSP]
-                    ∧ [advanced_pruning_techniques(CSP) = PS]
-                    ∧ [arc_consistency + domain_reduction + constraint_propagation ∈ PS]
-                    → [∀variable(cell) ∈ CSP: prune_domain_by_csp(cell, PS)]
-                """,
-                "logic": "Model KenKen as CSP and apply advanced constraint satisfaction techniques",
-                "complexity": "hard",
-                "composite": True,
-                "composed_of": ["cage_combination_analysis", "cage_arithmetic_sequences", "recursive_cage_solving"]
-            },
-            
-            "global_arithmetic_optimization": {
-                "name": "Global Arithmetic Optimization",
-                "description": "Optimize arithmetic assignments across all cages simultaneously",
-                "fol_rule": """
-                ∀global_state(GS) ∀optimization_function(OF) ∀arithmetic_constraints(AC):
-                    [all_cage_constraints(grid) = AC]
-                    ∧ [global_optimization_objective(AC) = OF]
-                    ∧ [minimize_conflicts_maximize_constraints(OF)]
-                    → [optimal_assignment(GS) = argmin(OF) subject_to row_column_constraints]
-                """,
-                "logic": "Find globally optimal arithmetic assignments satisfying all constraints",
-                "complexity": "hard",
-                "composite": True,
-                "composed_of": ["cage_product_factorization", "division_remainder_analysis", "constraint_satisfaction_pruning"]
-            },
-            
-            "cage_symmetry_breaking": {
-                "name": "Cage Symmetry Breaking",
-                "description": "Break symmetries in cage arrangements to reduce search space",
-                "fol_rule": """
-                ∀symmetry_group(SG) ∀cage_arrangement(CA) ∀symmetry_breaking_constraints(SBC):
-                    [identify_symmetries(CA) = SG]
-                    ∧ [generate_symmetry_breaking_constraints(SG) = SBC]
-                    ∧ [canonical_form_enforcement(CA, SBC)]
-                    → [∀symmetric_solution(s) ∈ SG: keep_only_canonical_representative(s)]
-                """,
-                "logic": "Use symmetry breaking to eliminate equivalent solution branches",
-                "complexity": "hard",
-                "composite": True,
-                "composed_of": ["large_cage_symmetry", "global_arithmetic_optimization", "cage_elimination_networks"]
-            },
-            
-            "temporal_constraint_reasoning": {
-                "name": "Temporal Constraint Reasoning",
-                "description": "Reason about temporal dependencies in cage solving order",
-                "fol_rule": """
-                ∀solving_sequence(SS) ∀temporal_dependencies(TD) ∀ordering_constraints(OC):
-                    [cage_solving_dependencies(all_cages) = TD]
-                    ∧ [optimal_solving_order(TD) = SS with constraints(OC)]
-                    ∧ [temporal_reasoning_about_cage_completion(SS, OC)]
-                    → [∀cage(c) ∈ SS: solve_in_optimal_temporal_order(c, SS)]
-                """,
-                "logic": "Use temporal reasoning to optimize cage solving sequence",
-                "complexity": "hard",
-                "composite": True,
-                "composed_of": ["recursive_cage_solving", "cage_forcing_chains", "multi_cage_chain_analysis"]
-            },
-            
-            "probabilistic_cage_analysis": {
-                "name": "Probabilistic Cage Analysis",
-                "description": "Use probabilistic reasoning for uncertain cage assignments",
-                "fol_rule": """
-                ∀cage(c) ∀probability_distribution(PD) ∀uncertainty_measure(UM):
-                    [assign_probabilities_to_cage_values(c) = PD]
-                    ∧ [measure_assignment_uncertainty(c) = UM]
-                    ∧ [probabilistic_constraint_propagation(PD, UM)]
-                    → [∀cell(r,col) ∈ cage(c): 
-                       weighted_candidate_elimination(cell(r,col), PD)]
-                """,
-                "logic": "Use probabilistic methods to handle uncertain cage value assignments",
-                "complexity": "hard",
-                "composite": True,
-                "composed_of": ["constraint_satisfaction_pruning", "cage_elimination_networks", "temporal_constraint_reasoning"]
-            },
-            
-            "meta_strategy_selection": {
-                "name": "Meta-Strategy Selection",
-                "description": "Intelligently select and combine strategies based on puzzle characteristics",
-                "fol_rule": """
-                ∀puzzle_state(PS) ∀strategy_set(SS) ∀meta_strategy(MS):
-                    [analyze_puzzle_characteristics(PS) = PC]
-                    ∧ [match_strategies_to_characteristics(PC) = SS]
-                    ∧ [meta_level_strategy_coordination(SS) = MS]
-                    → [apply_coordinated_strategy_sequence(PS, MS)]
-                """,
-                "logic": "Use meta-level reasoning to select optimal strategy combinations",
-                "complexity": "hard",
-                "composite": True,
-                "composed_of": ["probabilistic_cage_analysis", "cage_symmetry_breaking", "global_arithmetic_optimization"]
-            },
-            
-            "cage_graph_coloring": {
-                "name": "Cage Graph Coloring",
-                "description": "Model cage constraints as graph coloring problem",
-                "fol_rule": """
-                ∀cage_graph(CG) ∀coloring_scheme(CS) ∀constraint_graph(ConG):
-                    [model_cages_as_graph_nodes(all_cages) = CG]
-                    ∧ [cage_interactions_as_edges(CG) = ConG]
-                    ∧ [graph_coloring_solution(ConG) = CS]
-                    → [∀cage(c) ∈ CG: assign_values_by_coloring(c, CS)]
-                """,
-                "logic": "Use graph coloring algorithms to solve complex cage interactions",
-                "complexity": "hard",
-                "composite": True,
-                "composed_of": ["advanced_cage_intersection", "cage_elimination_networks", "meta_strategy_selection"]
-            },
-            
-            "dynamic_constraint_learning": {
-                "name": "Dynamic Constraint Learning",
-                "description": "Learn new constraints dynamically during solving process",
-                "fol_rule": """
-                ∀solving_process(SP) ∀learned_constraints(LC) ∀constraint_learning(CL):
-                    [during_solving_process(SP): identify_patterns(SP) = P]
-                    ∧ [extract_new_constraints_from_patterns(P) = LC]
-                    ∧ [validate_and_generalize_constraints(LC) = CL]
-                    → [∀future_similar_situation: apply_learned_constraints(CL)]
-                """,
-                "logic": "Dynamically learn and apply new constraint patterns during solving",
-                "complexity": "hard",
-                "composite": True,
-                "composed_of": ["temporal_constraint_reasoning", "cage_graph_coloring", "probabilistic_cage_analysis"]
-            },
-            
-            "holistic_puzzle_analysis": {
-                "name": "Holistic Puzzle Analysis",
-                "description": "Analyze entire puzzle structure for global optimization",
-                "fol_rule": """
-                ∀entire_puzzle(EP) ∀global_structure(GS) ∀holistic_solution(HS):
-                    [analyze_global_puzzle_structure(EP) = GS]
-                    ∧ [identify_global_patterns_and_symmetries(GS)]
-                    ∧ [holistic_optimization_approach(GS) = HS]
-                    → [solve_puzzle_holistically(EP, HS) rather_than piecewise]
-                """,
-                "logic": "Take holistic approach considering entire puzzle structure simultaneously",
-                "complexity": "hard",
-                "composite": True,
-                "composed_of": ["dynamic_constraint_learning", "meta_strategy_selection", "global_arithmetic_optimization"]
+                "composed_of": ["elimination_by_exhaustion", "constraint_propagation", "global_constraint_optimization"]
             }
+            
         }
     
     def get_strategy(self, strategy_name):
@@ -270,3 +74,66 @@ class HardKenKenStrategiesKB:
     
     def get_moderate_strategies(self):
         return self.moderate_kb.get_all_strategies()
+    
+    def get_strategy_description(self, strategy_name: str) -> str:
+        """Get description for a strategy"""
+        strategy = self.strategies.get(strategy_name)
+        if strategy:
+            return strategy.get('description', f'Strategy: {strategy_name}')
+        return f'Strategy: {strategy_name}'
+
+    def get_strategy_patterns(self, strategy_name: str) -> List[str]:
+        """Get applicable patterns for this strategy"""
+        if 'chaining' in strategy_name or 'chain' in strategy_name:
+            return ['chaining', 'cascade', 'propagation']
+        elif 'factorization' in strategy_name:
+            return ['factorization', 'number_theory', 'mathematical']
+        elif 'constraint' in strategy_name and 'satisfaction' in strategy_name:
+            return ['csp', 'constraint_satisfaction', 'algorithm']
+        elif 'decomposition' in strategy_name:
+            return ['decomposition', 'recursive', 'divide_conquer']
+        elif 'optimization' in strategy_name:
+            return ['optimization', 'global', 'constraint']
+        elif 'pattern' in strategy_name:
+            return ['pattern', 'recognition', 'template']
+        elif 'induction' in strategy_name:
+            return ['induction', 'mathematical', 'proof']
+        elif 'contradiction' in strategy_name:
+            return ['contradiction', 'proof', 'elimination']
+        elif 'symmetry' in strategy_name:
+            return ['symmetry', 'group_theory', 'transformation']
+        elif 'meta' in strategy_name:
+            return ['meta', 'reasoning', 'higher_order']
+        elif 'temporal' in strategy_name:
+            return ['temporal', 'ordering', 'sequence']
+        elif 'probabilistic' in strategy_name:
+            return ['probabilistic', 'bayesian', 'statistical']
+        else:
+            return ['hard', 'advanced', 'complex']
+
+    def get_strategy_prerequisites(self, strategy_name: str) -> List[str]:
+        """Get prerequisite strategies for this strategy"""
+        strategy = self.strategies.get(strategy_name)
+        if strategy and strategy.get('composite', False):
+            return strategy.get('composed_of', [])
+        
+        # For non-composite strategies, return basic prerequisites
+        basic_prereqs = ['naked_single', 'single_cell_cage', 'constraint_propagation']
+        if strategy_name not in basic_prereqs:
+            return basic_prereqs
+        return []
+    
+    def get_operations_used(self, strategy_name: str) -> List[str]:
+        """Get arithmetic operations used by this strategy"""
+        if 'factorization' in strategy_name:
+            return ['multiply', 'divide']
+        elif 'arithmetic' in strategy_name:
+            return ['add', 'subtract', 'multiply', 'divide']
+        elif any(term in strategy_name for term in ['sum', 'addition']):
+            return ['add']
+        elif any(term in strategy_name for term in ['product', 'multiplication']):
+            return ['multiply']
+        elif any(term in strategy_name for term in ['quotient', 'division']):
+            return ['divide']
+        else:
+            return []  # Meta-strategies may not use specific operations
