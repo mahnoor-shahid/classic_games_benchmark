@@ -1,5 +1,12 @@
 # Classic Logic Puzzle Games
 
+[![GitHub](https://img.shields.io/github/license/yourusername/classic-games)](https://github.com/yourusername/classic-games/blob/main/LICENSE)
+[![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/downloads/)
+[![NumPy](https://img.shields.io/badge/numpy-1.20%2B-yellowgreen)](https://numpy.org/)
+[![Pandas](https://img.shields.io/badge/pandas-1.2%2B-yellowgreen)](https://pandas.pydata.org/)
+[![Matplotlib](https://img.shields.io/badge/matplotlib-3.4%2B-orange)](https://matplotlib.org/)
+[![OpenCV](https://img.shields.io/badge/opencv-4.5%2B-red)](https://opencv.org/)
+
 A collection of three classic logic puzzle games implemented in Python, featuring sophisticated puzzle generation, validation, and solving capabilities.
 
 ## 🎮 Games Included
@@ -83,13 +90,13 @@ python main.py --action generate_validated
 ### KenKen
 ```bash
 cd kenken
-python main.py --action generate
+python kenken_main.py --action generate
 ```
 
 ### Futoshiki
 ```bash
 cd futoshiki
-python main.py --action generate
+python futoshiki_main.py --action generate
 ```
 
 ## 🛠️ Common Features
