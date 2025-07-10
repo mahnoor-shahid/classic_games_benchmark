@@ -52,6 +52,23 @@ This project is developed by the [Department of Sustainability and Innovation in
 </td>
 <td width="33%" align="center">
 
+### ➕ **Kakuro**
+**Cross-Sum Logic Puzzle**
+
+- 🧮 **Sum Constraints**: Row and column clues
+- 🖼️ **MNIST Digits**: Realistic number representation
+- 🧩 **Template-Based Generation**: Multiple symmetry types
+- 📊 **Difficulty Scaling**: Easy, Moderate, Hard
+- 🧠 **Strategy Hierarchy**: 10+ solving techniques
+- 🔗 **Compositionality**: Validated strategy chains
+
+[**Play Kakuro →**](game_projects/kakuro/)
+
+</td>
+</tr>
+<tr>
+<td width="33%" align="center">
+
 ### ⚖️ **Futoshiki**
 **Inequality Logic Challenge**
 
@@ -119,6 +136,10 @@ python main.py --action generate_validated
 # Build Futoshiki with visual constraints
 cd game_projects/futoshiki
 python futoshiki_main.py --action generate 
+
+# Generate Kakuro cross-sum puzzles
+cd game_projects/kakuro
+python main.py --action generate_validated --difficulty easy --count 10
 ```
 
 ---
@@ -139,6 +160,14 @@ classic-games/
 │   │   ├── arithmetic_engine.py
 │   │   ├── constraint_solver.py
 │   │   └── visual_recognition.py
+│   ├── ➕ kakuro/                    # Kakuro cross-sum puzzles
+│   │   ├── main.py                   # Main game interface
+│   │   ├── template_based_generators.py # Puzzle generation engine
+│   │   ├── kakuro_validator.py       # Puzzle validation logic
+│   │   ├── kakuro_easy_strategies_kb.py # Easy strategies knowledge base
+│   │   ├── kakuro_moderate_strategies_kb.py # Moderate strategies knowledge base
+│   │   ├── kakuro_hard_strategies_kb.py # Hard strategies knowledge base
+│   │   └── config.yaml               # Configuration
 │   └── ⚖️ futoshiki/                 # Inequality constraint puzzles
 │       ├── futoshiki_main.py
 │       ├── template_generator.py
@@ -156,7 +185,7 @@ classic-games/
 Each game implements a hierarchical knowledge base:
 
 ```python
-# Example: Futoshiki Strategy Hierarchy
+# Example: Sudoku Strategy Hierarchy
 Easy Strategies (Base Level)
 ├── naked_single
 ├── constraint_propagation  
@@ -172,6 +201,29 @@ Hard Strategies (Advanced Composition)
 ├── multiple_chains → [chain_analysis + intersection]
 ├── network_analysis → [global_consistency + propagation]
 └── temporal_reasoning → [sequence_analysis + validation]
+
+# Example: Kakuro Strategy Hierarchy
+Easy Strategies (Base Level)
+├── single_cell_sum
+├── unique_sum_combination
+├── cross_reference
+├── eliminate_impossible
+├── sum_partition
+├── digit_frequency
+
+Moderate Strategies (Composed)
+├── sum_partition → [single_cell_sum + unique_sum_combination]
+├── digit_frequency → [cross_reference + eliminate_impossible]
+├── sum_difference → [sum_partition + digit_frequency]
+├── minimum_maximum → [sum_partition + sum_difference]
+├── sum_completion → [sum_partition + minimum_maximum]
+├── digit_elimination → [digit_frequency + sum_completion]
+
+Hard Strategies (Advanced Composition)
+├── sum_completion → [sum_partition + minimum_maximum + sum_difference]
+├── digit_elimination → [digit_frequency + sum_completion + cross_reference]
+├── sum_difference → [sum_partition + digit_frequency + cross_reference]
+├── minimum_maximum → [sum_partition + sum_difference + unique_sum_combination]
 ```
 
 ---
