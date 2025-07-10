@@ -24,7 +24,7 @@ This project is developed by the [Department of Sustainability and Innovation in
 
 <table>
 <tr>
-<td width="33%" align="center">
+<td width="50%" align="center">
 
 ### 🔢 **Sudoku**
 **MNIST-Enhanced Classic**
@@ -37,7 +37,7 @@ This project is developed by the [Department of Sustainability and Innovation in
 [**Play Sudoku →**](game_projects/sudoku/)
 
 </td>
-<td width="33%" align="center">
+<td width="50%" align="center">
 
 ### ➕ **KenKen**
 **Arithmetic Puzzle Master**
@@ -50,7 +50,9 @@ This project is developed by the [Department of Sustainability and Innovation in
 [**Play KenKen →**](game_projects/kenken/)
 
 </td>
-<td width="33%" align="center">
+</tr>
+<tr>
+<td width="50%" align="center">
 
 ### ➕ **Kakuro**
 **Cross-Sum Logic Puzzle**
@@ -65,9 +67,7 @@ This project is developed by the [Department of Sustainability and Innovation in
 [**Play Kakuro →**](game_projects/kakuro/)
 
 </td>
-</tr>
-<tr>
-<td width="33%" align="center">
+<td width="50%" align="center">
 
 ### ⚖️ **Futoshiki**
 **Inequality Logic Challenge**
