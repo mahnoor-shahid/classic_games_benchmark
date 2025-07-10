@@ -57,10 +57,8 @@ This project is developed by the [Department of Sustainability and Innovation in
 ### ➕ **Kakuro**
 **Cross-Sum Logic Puzzle**
 
-- 🧮 **Sum Constraints**: Row and column clues
 - 🖼️ **MNIST Digits**: Realistic number representation
 - 🧩 **Template-Based Generation**: Multiple symmetry types
-- 📊 **Difficulty Scaling**: Easy, Moderate, Hard
 - 🧠 **Strategy Hierarchy**: 10+ solving techniques
 - 🔗 **Compositionality**: Validated strategy chains
 
