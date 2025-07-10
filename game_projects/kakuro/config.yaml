@@ -1,0 +1,117 @@
+# Kakuro Configuration
+
+# Grid settings
+grid:
+  min_size: 5
+  max_size: 15
+  default_size: 9
+
+# Difficulty settings
+difficulty:
+  easy:
+    min_size: 5
+    max_size: 7
+    min_sum: 3
+    max_sum: 9
+    min_cells_per_sum: 2
+    max_cells_per_sum: 4
+    min_filled_cells: 0.3
+    max_filled_cells: 0.4
+    required_strategies:
+      - single_cell_sum
+      - unique_sum_combination
+      - cross_reference
+      - eliminate_impossible
+    optional_strategies:
+      - sum_partition
+      - digit_frequency
+    symmetry_types:
+      - cross
+      - border
+      - checkerboard
+
+  moderate:
+    min_size: 7
+    max_size: 11
+    min_sum: 4
+    max_sum: 12
+    min_cells_per_sum: 3
+    max_cells_per_sum: 5
+    min_filled_cells: 0.4
+    max_filled_cells: 0.5
+    required_strategies:
+      - sum_partition
+      - digit_frequency
+      - sum_difference
+      - minimum_maximum
+    optional_strategies:
+      - sum_completion
+      - digit_elimination
+    symmetry_types:
+      - diamond
+      - spiral
+
+  hard:
+    min_size: 9
+    max_size: 15
+    min_sum: 5
+    max_sum: 15
+    min_cells_per_sum: 4
+    max_cells_per_sum: 6
+    min_filled_cells: 0.5
+    max_filled_cells: 0.6
+    required_strategies:
+      - sum_completion
+      - digit_elimination
+      - sum_difference
+      - minimum_maximum
+    optional_strategies:
+      - cross_reference
+      - unique_sum_combination
+    symmetry_types:
+      - complex
+
+# Generation settings
+generation:
+  max_attempts: 100
+  timeout_seconds: 30
+  min_strategies: 3
+  max_strategies: 6
+  strategy_compositionality:
+    min_composition_depth: 2
+    max_composition_depth: 4
+    min_strategy_combinations: 2
+    max_strategy_combinations: 5
+
+# Validation settings
+validation:
+  symmetry_tolerance: 2
+  min_filled_cells_per_row: 1
+  min_filled_cells_per_column: 1
+  max_filled_cells_variation: 2
+  strategy_sequence:
+    min_basic_strategies: 1
+    max_advanced_strategies: 3
+    require_prerequisites: true
+
+# Output settings
+output:
+  puzzles_dir: output/kakuro/puzzles
+  solutions_dir: output/kakuro/solutions
+  analysis_dir: output/kakuro/analysis
+  image_format: png
+  image_size: 512
+  image_dpi: 300
+  json_indent: 2
+
+# MNIST settings
+mnist:
+  image_size: 28
+  min_confidence: 0.8
+  max_confidence: 1.0
+  augmentation:
+    rotation_range: 10
+    width_shift_range: 0.1
+    height_shift_range: 0.1
+    zoom_range: 0.1
+    fill_mode: nearest 

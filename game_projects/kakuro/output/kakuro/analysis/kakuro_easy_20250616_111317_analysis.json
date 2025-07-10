@@ -1,0 +1,12 @@
+{
+  "total_puzzles": 0,
+  "difficulty": "easy",
+  "generation_time": 0.0039899349212646484,
+  "validation_stats": {
+    "validated": 0,
+    "failed": 10,
+    "compositionality_failed": 0
+  },
+  "templates_used": {},
+  "strategy_usage": {}
+}
