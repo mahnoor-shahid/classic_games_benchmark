@@ -90,9 +90,9 @@ Get everything running in under 2 minutes:
 
 ```bash
 # Clone and setup everything automatically
-git clone https://github.com/yourusername/classic-games.git
-cd classic-games
-python unified_env_quick_setup.py
+git clone https://github.com/mahnoor-shahid/classic_games_benchmark
+cd classic_games_benchmark
+unified_env_quick_setup.bat
 ```
 
 This magical script will:
@@ -111,8 +111,8 @@ If you prefer to set up manually:
 #### Installation
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/classic-games.git
-cd classic-games
+git clone https://github.com/mahnoor-shahid/classic_games_benchmark
+cd classic_games_benchmark
 ```
 
 2. Install dependencies:
@@ -129,7 +129,7 @@ python main.py --action generate_validated
 
 # Create KenKen challenges
 cd game_projects/kenken  
-python main.py --action generate_validated 
+python kenken_main.py --action generate_validated 
 
 # Build Futoshiki with visual constraints
 cd game_projects/futoshiki

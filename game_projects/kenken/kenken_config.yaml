@@ -7,9 +7,9 @@ project:
 
 generation:
   num_puzzles:
-    easy: 5
-    moderate: 3
-    hard: 2
+    easy: 10
+    moderate: 10
+    hard: 10
   grid_sizes:
     easy: [4, 5]
     moderate: [6] 

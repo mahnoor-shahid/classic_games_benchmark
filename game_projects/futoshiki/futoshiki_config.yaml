@@ -43,8 +43,8 @@ generation:
     digit_mapping_seed: 42  # Ensure reproducible digit mappings
   num_puzzles:
     easy: 10
-    moderate: 8
-    hard: 5
+    moderate: 10
+    hard: 10
   puzzle_sizes:
     easy: 5      # Changed from 4 to 5x5 for easy
     moderate: 6  # Changed from 5 to 6x6 for moderate  

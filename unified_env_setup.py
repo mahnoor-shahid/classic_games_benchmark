@@ -240,8 +240,9 @@ echo Shared data: ./shared_data/
 echo.
 echo Available games (run in separate directories):
 echo   sudoku/     - python main.py --action show_kb
-echo   kenken/     - python kenken_main.py --action show_kb  
-echo   kakuro/     - Coming soon...
+echo   kenken/     - python kenken_main.py --action show_kb 
+echo   futoshiki/  - python futoshiki_main.py --action show_kb  
+echo   kakuro/     - python main.py --action show_kb 
 echo   nonogram/   - Coming soon...
 echo.
 echo Each game project is independent but shares this environment
