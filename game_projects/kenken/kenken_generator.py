@@ -895,14 +895,22 @@ class MNISTKenKenGenerator:
     
     def save_dataset(self, dataset: List[Dict], filename: str):
         """Save dataset to JSON file"""
+        import json
+        class NumpyEncoder(json.JSONEncoder):
+            def default(self, obj):
+                import numpy as np
+                if isinstance(obj, np.integer):
+                    return int(obj)
+                elif isinstance(obj, np.floating):
+                    return float(obj)
+                elif isinstance(obj, np.ndarray):
+                    return obj.tolist()
+                return super().default(obj)
         try:
             os.makedirs(os.path.dirname(filename), exist_ok=True)
-            
             with open(filename, 'w') as f:
-                json.dump(dataset, f, indent=2)
-            
+                json.dump(dataset, f, indent=2, cls=NumpyEncoder)
             print(f"💾 Dataset saved to {filename}")
-            
         except Exception as e:
             print(f"❌ Error saving dataset: {e}")
     

@@ -44,7 +44,7 @@ generation:
     rotation_angle: 0
     use_augmentation: false
   num_puzzles:
-    easy: 10
+    easy: 30
     hard: 10
     moderate: 10
   strategies:

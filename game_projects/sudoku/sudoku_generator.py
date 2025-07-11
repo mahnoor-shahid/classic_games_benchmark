@@ -472,37 +472,75 @@ class MNISTSudokuGenerator:
             return selected
     
     def remove_cells_strategically(self, puzzle: np.ndarray, target_params: Dict) -> int:
-        """Remove cells strategically to reach target difficulty"""
+        """Remove cells strategically to reach target difficulty, using round-robin removal across boxes and enforcing band minimums for easy puzzles"""
         target_filled = target_params['target_filled']
         cells_to_remove = 81 - target_filled
-        
-        # Get all cell positions, prioritize corners and edges for harder puzzles
-        all_positions = []
-        
-        # Add positions in order of strategic importance
-        for row in range(9):
-            for col in range(9):
-                all_positions.append((row, col))
-        
-        random.shuffle(all_positions)
-        
-        removed = 0
-        for row, col in all_positions:
-            if removed >= cells_to_remove:
-                break
-            
-            # Try removing this cell
-            original_value = puzzle[row, col]
-            puzzle[row, col] = 0
-            
-            # Check if puzzle still has unique solution
-            if self.validator.has_unique_solution(puzzle):
-                removed += 1
-            else:
-                # Restore if removal breaks uniqueness
-                puzzle[row, col] = original_value
-        
-        return removed
+
+        if target_params.get('min_filled', 0) >= 36:  # easy puzzle, use round-robin by box and band minimums
+            min_per_region = 5
+            min_per_band = 12  # minimum clues per horizontal band (top/mid/bottom 3 rows)
+            filled_cells = np.count_nonzero(puzzle)
+            removed = 0
+            # Build a list of removable positions for each 3x3 box
+            box_positions = []
+            for box_row in range(0, 9, 3):
+                for box_col in range(0, 9, 3):
+                    positions = [(r, c) for r in range(box_row, box_row+3) for c in range(box_col, box_col+3)]
+                    random.shuffle(positions)
+                    box_positions.append(positions)
+            # Round-robin removal across boxes
+            while removed < cells_to_remove and filled_cells > target_filled:
+                progress = False
+                for box in box_positions:
+                    while box:
+                        row, col = box.pop()
+                        if puzzle[row, col] == 0:
+                            continue
+                        # Try removing
+                        original_value = puzzle[row, col]
+                        puzzle[row, col] = 0
+                        # Check all region minimums
+                        valid = True
+                        if np.count_nonzero(puzzle[row, :]) < min_per_region:
+                            valid = False
+                        if np.count_nonzero(puzzle[:, col]) < min_per_region:
+                            valid = False
+                        box_row, box_col = 3 * (row // 3), 3 * (col // 3)
+                        box_grid = puzzle[box_row:box_row+3, box_col:box_col+3]
+                        if np.count_nonzero(box_grid) < min_per_region:
+                            valid = False
+                        # Check band minimums
+                        for band_start in [0, 3, 6]:
+                            band = puzzle[band_start:band_start+3, :]
+                            if np.count_nonzero(band) < min_per_band:
+                                valid = False
+                                break
+                        # Check uniqueness
+                        if valid and self.validator.has_unique_solution(puzzle):
+                            removed += 1
+                            filled_cells -= 1
+                            progress = True
+                        else:
+                            puzzle[row, col] = original_value
+                        break  # Only try one cell per box per round
+                if not progress:
+                    break  # No more cells can be removed without violating constraints
+            return removed
+        else:
+            # Moderate/hard: keep current logic
+            all_positions = [(row, col) for row in range(9) for col in range(9)]
+            random.shuffle(all_positions)
+            removed = 0
+            for row, col in all_positions:
+                if removed >= cells_to_remove:
+                    break
+                original_value = puzzle[row, col]
+                puzzle[row, col] = 0
+                if self.validator.has_unique_solution(puzzle):
+                    removed += 1
+                else:
+                    puzzle[row, col] = original_value
+            return removed
     
     def calculate_puzzle_quality(self, puzzle: np.ndarray, strategies: List[str], difficulty: str) -> float:
         """Calculate quality score for a puzzle (0.0 to 1.0)"""
