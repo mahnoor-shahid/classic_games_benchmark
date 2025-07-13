@@ -1,0 +1,29 @@
+
+project:
+  name: "mnist-sudoku"
+  output_dir: "./output"
+  data_dir: "./data"
+  logs_dir: "./logs"
+
+generation:
+  num_puzzles:
+    easy: 50
+    moderate: 20
+    hard: 20
+
+validation:
+  strict_mode: true
+  check_uniqueness: true
+  verify_solvability: true
+  validate_strategies: true
+  max_solve_time_seconds: 30
+
+output:
+  formats:
+    json: true
+  images:
+    save_mnist_puzzles: true
+
+logging:
+  level: "INFO"
+  console_output: true
